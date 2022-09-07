@@ -2,7 +2,7 @@
 
 (async function() {
 	// user-defined constants
-	const EXCLUDED_FILES = ["bin"];
+	const EXCLUDED_FILES = ["bin", "node_modules", "package.json", "package-lock.json"];
 	const IGNORED_SSI_VARS = ["pageUrl"];
 	const SSI_FILES = ["index.html"];
 	const IPFS_DIR_NAME = "twifag-ipfs";
