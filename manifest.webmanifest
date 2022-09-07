@@ -1,0 +1,16 @@
+{
+	"$schema": "https://json.schemastore.org/web-manifest-combined.json", 
+	"background_color": "#002b54", 
+	"categories": ["social"], 
+	"description": "A list of links related to Twifag, some guy who really likes Twilight Sparkle a lot.  What great taste in ponies!", 
+	"icons": [
+		{ "sizes": "192x192", "src": "/favicon/favicon-192.webp", "type": "image/webp" }, 
+		{ "sizes": "192x192", "src": "/favicon/favicon-192.png", "type": "image/png" }, 
+		{ "sizes": "512x512", "src": "/favicon/favicon-512.webp", "type": "image/webp" }, 
+		{ "sizes": "512x512", "src": "/favicon/favicon-512.png", "type": "image/png" }
+	], 
+	"id": "/", 
+	"name": "Twifag", 
+	"start_url": ".", 
+	"theme_color": "#270d45"
+}

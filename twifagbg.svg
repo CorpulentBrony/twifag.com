@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 1920 1080">
+	<defs>
+		<filter id="blurry">
+			<feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
+		</filter>
+		<linearGradient id="blue">
+			<stop offset="0%" stop-color="#002b54"/>
+			<stop offset="100%" stop-color="#363b74"/>
+		</linearGradient>
+		<linearGradient id="lavender">
+			<stop offset="0%" stop-color="#6a328d"/>
+			<stop offset="100%" stop-color="#caaad1"/>
+		</linearGradient>
+		<linearGradient id="purple">
+			<stop offset="0%" stop-color="#270d45"/>
+			<stop offset="50%" stop-color="#963691"/>
+			<stop offset="85%" stop-color="#ef4f91"/>
+		</linearGradient>
+	</defs>
+	<style type="text/css"><![CDATA[
+		/* polygon { filter: url(#blurry); } */
+		.blue { fill: url(#blue); }
+		.lavender { fill: url(#lavender); }
+		.purple { fill: url(#purple); }
+	]]></style>
+	<polygon class="blue" id="bottom-blue" points="1920,643 1920,1080 0,1080"/>
+	<polygon class="lavender" id="bottom-lavender" points="1920,643 0,1080 1920,145.7"/>
+	<polygon class="purple" id="bottom-purple" points="1920,145.7 1920,0 1336.2,0 0,1080"/>
+	<polygon class="lavender" id="top-lavender" points="1336.2,0 803.1,0 0,1080"/>
+	<polygon class="purple" id="top-purple" points="433.6,0 803.1,0 0,1080"/>
+	<polygon class="blue" id="top-blue" points="433.6,0 0,1080 0,0"/>
+</svg>

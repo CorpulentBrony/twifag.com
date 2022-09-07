@@ -1,0 +1,78 @@
+#!/usr/bin/env node
+
+(async function() {
+	// user-defined constants
+	const EXCLUDED_FILES = ["bin"];
+	const IGNORED_SSI_VARS = ["pageUrl"];
+	const SSI_FILES = ["index.html"];
+	const IPFS_DIR_NAME = "twifag-ipfs";
+	const OUTPUT_CAR_FILE_NAME = "twifag-ipfs.car";
+	const REGEX_EMPTY_LINES = /\n^\s+$\n/gm;
+	const REGEX_SETS = /^\s*<!--#\s+set\s+(?<setArguments>.*)\s+-->\s*$/gm;
+	const REGEX_SET_GENERAL = /<!--#\s+set\s+.+\s+-->/g;
+	const REGEX_SET_VALUE = /value="(?<value>[^"]*)"/;
+	const REGEX_SET_VARIABLE = /var="(?<variable>[^"]*)"/;
+	const WALLET_DIR_NAME = ".well-known/wallets/";
+	const WALLET_SOURCE_DIR = "/var/www/html/HIP-0002/twifag/";
+
+	// imported modules
+	const fsPromises = require("node:fs/promises");
+	const ipfsCarBlockstoreFs = require("/usr/local/lib/node_modules/ipfs-car/dist/cjs/blockstore/fs");
+	const ipfsCarPackFs = require("/usr/local/lib/node_modules/ipfs-car/dist/cjs/pack/fs");
+	const path = require("node:path");
+	const stream = require("node:stream");
+
+	// calculated constants
+	const WORKING_DIR = path.resolve(__dirname, "..");
+
+	const OUTPUT_CAR_FILE = path.resolve(WORKING_DIR, OUTPUT_CAR_FILE_NAME);
+	const IPFS_DIR = path.resolve(WORKING_DIR, IPFS_DIR_NAME);
+
+	const WALLET_DIR = path.resolve(IPFS_DIR, WALLET_DIR_NAME);
+
+	// functions
+	async function copyAllFiles() {
+		await globalThis.Promise.all([fsPromises.rm(IPFS_DIR, { force: true, recursive: true }), fsPromises.rm(OUTPUT_CAR_FILE, { force: true })]);
+		const [addressesToCopy, filesToCopy] = await globalThis.Promise.all([fsPromises.readdir(WALLET_SOURCE_DIR), fsPromises.readdir(WORKING_DIR)]);
+		await fsPromises.mkdir(WALLET_DIR, { recursive: true });
+		const copyPromises = filesToCopy.reduce((copyPromises, file) => {
+			if (!EXCLUDED_FILES.includes(file) && !SSI_FILES.includes(file))
+				copyPromises.push(fsPromises.cp(path.resolve(WORKING_DIR, file), path.resolve(IPFS_DIR, file), { preserveTimestamps: true, recursive: true }));
+			return copyPromises;
+		}, []);
+		addressesToCopy.reduce((copyPromises, file) => {
+			copyPromises.push(fsPromises.cp(path.resolve(WALLET_SOURCE_DIR, file), path.resolve(WALLET_DIR, file), { preserveTimestamps: true, recursive: true }));
+			return copyPromises;
+		}, copyPromises);
+		await globalThis.Promise.all(copyPromises);
+	}
+	async function generateCarFile() {
+		await ipfsCarPackFs.packToFs({ blockstore: new ipfsCarBlockstoreFs.FsBlockStore(), input: IPFS_DIR, output: OUTPUT_CAR_FILE });
+	}
+	async function processAllSSI() {
+		await globalThis.Promise.all(SSI_FILES.reduce((processPromises, file) => {
+			processPromises.push(processSSI(file));
+			return processPromises;
+		}, []));
+	}
+	async function processSSI(file) {
+		const variables = new globalThis.Map();
+		let fileContents = await fsPromises.readFile(path.resolve(WORKING_DIR, file), { encoding: "utf8" });
+
+		for (const match of fileContents.matchAll(REGEX_SETS)) {
+			const variable = match.groups.setArguments.match(REGEX_SET_VARIABLE).groups.variable;
+			const value = IGNORED_SSI_VARS.includes(variable) ? "" : match.groups.setArguments.match(REGEX_SET_VALUE).groups.value;
+			variables.set(variable, value);
+		}
+		
+		for (const [variable, value] of variables)
+			fileContents = fileContents.replace(new globalThis.RegExp(`<!--#\\s+echo\\s+var=['"]${variable}['"]\\s+-->`, "g"), value);
+		fileContents = fileContents.replace(REGEX_SET_GENERAL, "").replace(REGEX_EMPTY_LINES, "");
+		await fsPromises.writeFile(path.resolve(IPFS_DIR, file), fileContents);
+	}
+
+	// execution
+	await copyAllFiles();
+	await processAllSSI();
+	await generateCarFile();
+})().catch(console.error);
