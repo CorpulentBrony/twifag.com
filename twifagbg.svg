@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" viewBox="0 0 1920 1080">
+	<metadata>
+		<rdf:RDF xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+			<cc:Work rdf:about="">
+				<dc:format>image/svg+xml</dc:format>
+				<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+				<cc:license rdf:resource="https://donutsteel.pl/"/>
+				<cc:license rdf:resource="https://plusnigger.autism.exposed/"/>
+			</cc:Work>
+			<cc:License rdf:about="https://donutsteel.pl/">
+				<cc:prohibits rdf:resource="http://creativecommons.org/ns#CommercialUse"/>
+				<cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+				<cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+				<cc:requires rdf:resource="http://creativecommons.org/ns#ShareAlike"/>
+			</cc:License>
+			<cc:License rdf:about="https://donutsteel.pl/plusnigger/">
+				<cc:requires rdf:resource="http://creativecommons.org/ns#Notice"/>
+			</cc:License>
+		</rdf:RDF>
+	</metadata>
 	<defs>
 		<filter id="blurry">
 			<feGaussianBlur in="SourceGraphic" stdDeviation="2"/>
