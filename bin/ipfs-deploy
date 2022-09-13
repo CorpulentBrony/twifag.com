@@ -16,9 +16,10 @@
 	const WALLET_SOURCE_DIR = "/var/www/html/HIP-0002/twifag/";
 
 	// imported modules
+	const fse = require("fs-extra");
 	const fsPromises = require("node:fs/promises");
-	const ipfsCarBlockstoreFs = require("/usr/local/lib/node_modules/ipfs-car/dist/cjs/blockstore/fs");
-	const ipfsCarPackFs = require("/usr/local/lib/node_modules/ipfs-car/dist/cjs/pack/fs");
+	const ipfsCarBlockstoreFs = require("ipfs-car/blockstore/fs");
+	const ipfsCarPackFs = require("ipfs-car/pack/fs");
 	const path = require("node:path");
 	const stream = require("node:stream");
 
@@ -37,11 +38,11 @@
 		await fsPromises.mkdir(WALLET_DIR, { recursive: true });
 		const copyPromises = filesToCopy.reduce((copyPromises, file) => {
 			if (!EXCLUDED_FILES.includes(file) && !SSI_FILES.includes(file))
-				copyPromises.push(fsPromises.cp(path.resolve(WORKING_DIR, file), path.resolve(IPFS_DIR, file), { preserveTimestamps: true, recursive: true }));
+				copyPromises.push(fse.copy(path.resolve(WORKING_DIR, file), path.resolve(IPFS_DIR, file), { preserveTimestamps: true, recursive: true }));
 			return copyPromises;
 		}, []);
 		addressesToCopy.reduce((copyPromises, file) => {
-			copyPromises.push(fsPromises.cp(path.resolve(WALLET_SOURCE_DIR, file), path.resolve(WALLET_DIR, file), { preserveTimestamps: true, recursive: true }));
+			copyPromises.push(fse.copy(path.resolve(WALLET_SOURCE_DIR, file), path.resolve(WALLET_DIR, file), { preserveTimestamps: true, recursive: true }));
 			return copyPromises;
 		}, copyPromises);
 		await globalThis.Promise.all(copyPromises);

@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/CorpulentBrony/twifag.com#readme",
   "devDependencies": {
+    "fs-extra": "^10.1.0",
     "ipfs-car": "^0.8.1"
   }
 }
