@@ -6,8 +6,6 @@
 	const childProcess = require("node:child_process");
 	const fse = require("fs-extra");
 	const fsPromises = require("node:fs/promises");
-	// const ipfsCarBlockstoreFs = require("ipfs-car/blockstore/fs");
-	// const ipfsCarPackFs = require("ipfs-car/pack/fs");
 	const path = require("node:path");
 
 	// classes
@@ -106,7 +104,7 @@
 
 	// functions
 	async function copyAllFiles() {
-		await fsPromises.rm(CONSTANTS.DIR.IPFS, { force: true, recursive: true });// await globalThis.Promise.all([fsPromises.rm(CONSTANTS.DIR.IPFS, { force: true, recursive: true }), fsPromises.rm(OUTPUT_CAR_FILE, { force: true })]);
+		await fsPromises.rm(CONSTANTS.DIR.IPFS, { force: true, recursive: true });
 		const [addressesToCopy, filesToCopy] = await globalThis.Promise.all([FileSystem.readdir(CONSTANTS.DIR.WALLET.SOURCE), FileSystem.readdir(CONSTANTS.DIR)]);
 		await FileSystem.mkdir(CONSTANTS.DIR.WALLET, { recursive: true });
 		const copyPromises = filesToCopy.reduce((copyPromises, file) => {
