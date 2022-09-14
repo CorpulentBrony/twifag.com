@@ -13,7 +13,10 @@
 		static copy(source, destination, options = undefined) { return fse.copy(globalThis.String(source), globalThis.String(destination), options); }
 		static mkdir(path, options = undefined) { return fsPromises.mkdir(globalThis.String(path), options); }
 		static readdir(path, options = undefined) { return fsPromises.readdir(globalThis.String(path), options); }
+		static readFile(path, options = undefined) { return fsPromises.readFile(globalThis.String(path), options); }
 		static resolvePath(...paths) { return path.resolve(...paths.map(part => globalThis.String(part))); }
+		static rm(path, options = undefined) { return fsPromises.rm(globalThis.String(path), options); }
+		static writeFile(file, data, options = undefined) { return fsPromises.writeFile(globalThis.String(file), data, options); }
 	}
 
 	class IPFS {
@@ -80,7 +83,7 @@
 	class SSI {
 		static async #process(file) {
 			const variables = new globalThis.Map();
-			let fileContents = await fsPromises.readFile(FileSystem.resolvePath(CONSTANTS.DIR, file), { encoding: "utf8" });
+			let fileContents = await FileSystem.readFile(FileSystem.resolvePath(CONSTANTS.DIR, file), { encoding: "utf8" });
 
 			for (const match of fileContents.matchAll(CONSTANTS.REGEX.SET.COLLECTION)) {
 				const variable = match.groups.setArguments.match(CONSTANTS.REGEX.SET.VARIABLE).groups.variable;
@@ -91,7 +94,7 @@
 			for (const [variable, value] of variables)
 				fileContents = fileContents.replace(new globalThis.RegExp(`<!--#\\s+echo\\s+var=['"]${variable}['"]\\s+-->`, "g"), value);
 			fileContents = fileContents.replace(CONSTANTS.REGEX.SET.GENERAL, "").replace(CONSTANTS.REGEX.EMPTY_LINES, "");
-			await fsPromises.writeFile(FileSystem.resolvePath(CONSTANTS.DIR.IPFS, file), fileContents);
+			await FileSystem.writeFile(FileSystem.resolvePath(CONSTANTS.DIR.IPFS, file), fileContents);
 		}
 
 		static async process() {
@@ -104,7 +107,7 @@
 
 	// functions
 	async function copyAllFiles() {
-		await fsPromises.rm(CONSTANTS.DIR.IPFS, { force: true, recursive: true });
+		await FileSystem.rm(CONSTANTS.DIR.IPFS, { force: true, recursive: true });
 		const [addressesToCopy, filesToCopy] = await globalThis.Promise.all([FileSystem.readdir(CONSTANTS.DIR.WALLET.SOURCE), FileSystem.readdir(CONSTANTS.DIR)]);
 		await FileSystem.mkdir(CONSTANTS.DIR.WALLET, { recursive: true });
 		const copyPromises = filesToCopy.reduce((copyPromises, file) => {
