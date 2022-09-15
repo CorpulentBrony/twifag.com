@@ -80,7 +80,7 @@ class IPFS {
 			}
 			static rm(cid) {
 				return new globalThis.Promise((resolve, reject) => {
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM} ${cid}`);
+					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM}=${cid}`);
 					command.stderr.on("data", reject);
 					command.on("close", code => {
 						if (code === 0)
