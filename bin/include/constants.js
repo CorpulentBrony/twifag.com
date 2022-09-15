@@ -7,7 +7,7 @@ const IPFS_COMMAND = "~/.local/bin/ipfs";
 const IPFS_COMMAND_ADD = "add --cid-version=1 --recursive --hidden --pin=false --quieter";
 const IPFS_COMMAND_KEY_LIST = "key list --ipns-base base32 -l";
 const IPFS_COMMAND_NAME_RESOLVE = "name resolve";
-const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service=pinata --cid";
+const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service=pinata --status=queued,pinning,pinned,failed --cid";
 const IPFS_COMMAND_PIN_RM = "pin rm";
 const IPFS_COMMAND_PIN_UPDATE = "pin update";
 const IPFS_DIR_NAME = "twifag-ipfs";
