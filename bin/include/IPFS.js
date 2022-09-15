@@ -109,7 +109,7 @@ class IPFS {
 		}
 		static update(oldCid, newCid) {
 			return new globalThis.Promise((resolve, reject) => {
-				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.UPDATE} ${oldCid} ${newCid}`);
+				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.UPDATE} ${oldCid} ${newCid}`);
 				command.stderr.on("data", reject);
 				command.on("close", code => {
 					if (code === 0)
