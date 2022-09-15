@@ -11,7 +11,7 @@ class IPFS {
 			const match = regExp.exec(keyList);
 
 			if ("groups" in match && "keyValue" in match.groups && globalThis.String(match.groups.keyValue).length > 0)
-				return match.groups.keyValue;
+				return `/ipns/${match.groups.keyValue}`;
 			return false;
 		}
 		static list() {
@@ -45,7 +45,7 @@ class IPFS {
 			});
 		}
 		static async resolve(keyPromise) {
-			const key =`/ipns/${await globalThis.Promise.resolve(keyPromise)}`;
+			const key = await globalThis.Promise.resolve(keyPromise);
 			return new globalThis.Promise((resolve, reject) => {
 				let cid = "";
 				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.RESOLVE} ${key}`);
@@ -79,10 +79,10 @@ class IPFS {
 		}
 	};
 
-	static add() {
+	static add(fileOrDirectory) {
 		return new globalThis.Promise((resolve, reject) => {
 			let cid = "";
-			const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.ADD} ${CONSTANTS.DIR.IPFS}`);
+			const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.ADD} ${fileOrDirectory}`);
 			command.stderr.on("data", reject);
 			command.stdout.on("data", data => cid += data);
 			command.on("close", code => {

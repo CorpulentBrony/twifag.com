@@ -32,7 +32,7 @@
 	console.log("processing SSI directives...");
 	await SSI.process();
 	console.log("uploading to IPFS...");
-	const cid = await IPFS.add();
+	const cid = await IPFS.add(CONSTANTS.DIR.IPFS);
 
 	if (cid === await ipfsPriorCid) {
 		console.log(`CID remains unchanged ${cid}`);
@@ -40,7 +40,7 @@
 	}
 	console.log(`new CID uploaded to ${cid}`);
 	await globalThis.Promise.all([
-		(async () => console.log(`removing old pin and publishing new CID to /ipns/${await ipfsKeyPromise} ...`))(), 
+		(async () => console.log(`removing old pin and publishing new CID to ${await ipfsKeyPromise} ...`))(), 
 		IPFS.NAME.publish(cid), 
 		(async () => IPFS.PIN.rm(await ipfsPriorCid))()
 	]);
