@@ -47,9 +47,9 @@
 			}
 		};
 		static NAME = class NAME {
-			static publish() {
+			static publish(cid) {
 				return new globalThis.Promise((resolve, reject) => {
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.PUBLISH}${cid}`);
+					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.PUBLISH} ${cid}`);
 					command.stderr.on("data", reject);
 					command.on("close", code => {
 						if (code === 0)
@@ -60,18 +60,36 @@
 					command.on("error", reject);
 				});
 			}
+			static async resolve(keyPromise) {
+				const key =`/ipns/${await keyPromise}`;
+				return new globalThis.Promise((resolve, reject) => {
+					let cid = "";
+					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.RESOLVE} ${key}`);
+					command.stderr.on("data", reject);
+					command.stdout.on("data", data => cid += data);
+					command.on("close", code => {
+						cid = cid.trim();
+
+						if (cid.length > 0)
+							resolve(cid);
+						else
+							reject("ipfs name resolve command returned no CID");
+					});
+					command.on("error", reject);
+				});
+			}
 		};
 
-		static upload() {
+		static add() {
 			return new globalThis.Promise((resolve, reject) => {
 				let cid = "";
 				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.ADD} ${CONSTANTS.DIR.IPFS}`);
 				command.stderr.on("data", reject);
 				command.stdout.on("data", data => cid += data);
 				command.on("close", code => {
-					cid = cid.trim();
+					cid = `/ipfs/${cid.trim()}`;
 
-					if (cid.length > 0)
+					if (cid.length > 6)
 						resolve(cid);
 					else
 						reject("ipfs add command returned no CID");
@@ -124,15 +142,22 @@
 	function escapeRegExpString(regExpString) { return regExpString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
 	// execution
+	const ipfsKeyPromise = IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
+	const ipfsPriorCid = IPFS.NAME.resolve(ipfsKeyPromise);
 	console.log(`copying files to ${CONSTANTS.DIR.IPFS}...`);
 	await copyAllFiles();
 	console.log("processing SSI directives...");
 	await SSI.process();
 	console.log("uploading to IPFS...");
-	const cid = await IPFS.upload();
-	console.log(`uploaded to /ipfs/${cid}`);
+	const cid = await IPFS.add();
+
+	if (cid === await ipfsPriorCid) {
+		console.log(`CID remains unchanged ${cid}`);
+		return;
+	}
+	console.log(`uploaded to ${cid}`);
 	await globalThis.Promise.all([
-		(async () => console.log(`publishing to /ipns/${await IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY)} ...`))(), 
+		(async () => console.log(`publishing to /ipns/${await ipfsKeyPromise} ...`))(), 
 		IPFS.NAME.publish(cid)
 	]);
 })().catch(console.error);
