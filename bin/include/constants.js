@@ -4,10 +4,10 @@ const path = require("node:path");
 const FILES_EXCLUDED = [".cid", ".git", ".gitignore", "bin", "node_modules", "package.json", "package-lock.json"]; // files that will not be copied
 const FILES_SSI = ["index.html"]; // files that contain SSI declare/set properties (all sets must be declared within the same file)
 const IPFS_COMMAND = "~/.local/bin/ipfs";
-const IPFS_COMMAND_ADD = "add --cid-version 1 --recursive --hidden --pin false --quieter";
+const IPFS_COMMAND_ADD = "add --cid-version=1 --recursive --hidden --pin=false --quieter";
 const IPFS_COMMAND_KEY_LIST = "key list --ipns-base base32 -l";
 const IPFS_COMMAND_NAME_RESOLVE = "name resolve";
-const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service pinata --cid";
+const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service=pinata --cid=";
 const IPFS_COMMAND_PIN_RM = "pin rm";
 const IPFS_COMMAND_PIN_UPDATE = "pin update";
 const IPFS_DIR_NAME = "twifag-ipfs";
@@ -23,8 +23,8 @@ const WALLET_DIR_SOURCE = "/var/www/html/HIP-0002/twifag/";
 
 // calculated constants
 const DIR_WORKING = path.resolve(__dirname, "../..");
-const IPFS_COMMAND_NAME_PUBLISH = `name publish --ipns-base base32 --key ${IPFS_TARGET_KEY} --quieter`;
-const IPFS_COMMAND_PIN_REMOTE_ADD = `pin remote add --name "${IPFS_TARGET_KEY}-${(new globalThis.Date()).toISOString()}" --service pinata`;
+const IPFS_COMMAND_NAME_PUBLISH = `name publish --ipns-base base32 --key=${IPFS_TARGET_KEY} --quieter`;
+const IPFS_COMMAND_PIN_REMOTE_ADD = `pin remote add --background --name="${IPFS_TARGET_KEY}-${(new globalThis.Date()).toISOString()}" --service=pinata`;
 
 // const OUTPUT_CAR_FILE = path.resolve(WORKING_DIR, OUTPUT_CAR_FILE_NAME);
 const DIR_IPFS = path.resolve(DIR_WORKING, IPFS_DIR_NAME);
