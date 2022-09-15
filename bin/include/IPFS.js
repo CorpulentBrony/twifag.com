@@ -64,7 +64,37 @@ class IPFS {
 		}
 	};
 	static PIN = class PIN {
-		static rm(cid) {
+		static REMOTE = class REMOTE {
+			static add(cid) {
+				return new globalThis.Promise((resolve, reject) => {
+					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.ADD} ${cid}`);
+					command.stderr.on("data", reject);
+					command.on("close", code => {
+						if (code === 0)
+							resolve();
+						else
+							reject(`IPFS pin remote add terminated with exit code ${code}`);
+					});
+					command.on("error", reject);
+				});
+			}
+			static rm(cid) {
+				return new globalThis.Promise((resolve, reject) => {
+					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM} ${cid}`);
+					command.stderr.on("data", reject);
+					command.on("close", code => {
+						if (code === 0)
+							resolve();
+						else
+							reject(`IPFS pin remote rm terminated with exit code ${code}`);
+					});
+					command.on("error", reject);
+				});
+			}
+		};
+
+		static rm(cidPromise) {
+			const cid = await globalThis.Promise.resolve(cidPromise);
 			return new globalThis.Promise((resolve, reject) => {
 				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.RM} ${cid}`);
 				command.stderr.on("data", reject);
@@ -73,6 +103,19 @@ class IPFS {
 						resolve();
 					else
 						reject(`IPFS pin rm terminated with exit code ${code}`);
+				});
+				command.on("error", reject);
+			});
+		}
+		static update(oldCid, newCid) {
+			return new globalThis.Promise((resolve, reject) => {
+				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.UPDATE} ${oldCid} ${newCid}`);
+				command.stderr.on("data", reject);
+				command.on("close", code => {
+					if (code === 0)
+						resolve();
+					else
+						reject(`IPFS pin update terminated with exit code ${code}`);
 				});
 				command.on("error", reject);
 			});

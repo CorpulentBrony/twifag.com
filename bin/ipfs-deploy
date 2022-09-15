@@ -23,25 +23,37 @@
 		}, copyPromises);
 		await globalThis.Promise.all(copyPromises);
 	}
+	function resolveIpfsKey(ipfsKey) {
+		try { return IPFS.NAME.resolve(ipfsKey); }
+		catch { return globalThis.Promise.resolve(undefined); }
+	}
 
 	// execution
-	const ipfsKeyPromise = IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
-	const ipfsPriorCid = IPFS.NAME.resolve(ipfsKeyPromise);
-	console.log(`copying files to ${CONSTANTS.DIR.IPFS}...`);
+	console.log(`copying files to ${CONSTANTS.DIR.IPFS} ...`);
 	await copyAllFiles();
-	console.log("processing SSI directives...");
+	console.log("processing SSI directives ...");
 	await SSI.process();
-	console.log("uploading to IPFS...");
+	console.log("uploading to IPFS ...");
 	const cid = await IPFS.add(CONSTANTS.DIR.IPFS);
+	const ipfsKey = await IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
+	const ipfsPriorCid = await resolveIpfsKey(ipfsKey);
 
-	if (cid === await ipfsPriorCid) {
+	if (cid === ipfsPriorCid) {
 		console.log(`CID remains unchanged ${cid}`);
 		return;
 	}
 	console.log(`new CID uploaded to ${cid}`);
+
+	if (ipfsPriorCid !== undefined) {
+		console.log(`removing old remote pin and updating old CID ${ipfsPriorCid} ...`);
+		await globalThis.Promise.all([
+			IPFS.PIN.update(ipfsPriorCid, cid), 
+			IPFS.PIN.REMOTE.rm(ipfsPriorCid)
+		]);
+	}
+	console.log(`adding remote pin and publishing new CID to ${ipfsKey} ...`);
 	await globalThis.Promise.all([
-		(async () => console.log(`removing old pin and publishing new CID to ${await ipfsKeyPromise} ...`))(), 
 		IPFS.NAME.publish(cid), 
-		(async () => IPFS.PIN.rm(await ipfsPriorCid))()
+		IPFS.PIN.REMOTE.add(cid)
 	]);
 })().catch(console.error);
