@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#" 🦄 🐎🐱>
+	<!--# set value="https://twifag.com/" var="canonicalUrl" -->
 	<!--# set value="A list of links related to Twifag, some guy who really likes Twilight Sparkle a lot.  What great taste in ponies!" var="pageDescription" -->
 	<!--# set value="mare, twifag, twilight sparkle, brony, corpulent brony" var="pageKeywords" -->
 	<!--# set value="Twifag — Just another Twilight Sparkle simp" var="pageTitle" -->
@@ -7,13 +8,13 @@
 	<head>
 		<meta charset="utf-8">
 		<meta content="width=device-width, initial-scale=1" name="viewport">
-		<link href="https://twifag.com/" rel="canonical" type="text/html">
+		<link href="<!--# echo var='canonicalUrl' -->" rel="canonical" type="text/html">
 		<!-- <link as="style" rel="preload" href="index.css" importance="high" type="text/css"> -->
 		<!-- <link as="style" rel="preload" href="common.css" importance="high" type="text/css"> -->
 		<!-- <link rel="modulepreload" href="script/stars.mjs" importance="high" type="text/javascript"> -->
 		<!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
 		<!-- <link crossorigin rel="preconnect" href="https://fonts.gstatic.com"> -->
-		<link href="<!--# echo var='pageUrl' -->" rel="home index" type="text/html">
+		<link href="." rel="home index" type="text/html">
 		<link href="manifest.webmanifest" rel="manifest" type="application/manifest+json">
 		<!-- <link href="/sitemap.xml" rel="sitemap" type="text/xml"> -->
 		<!-- <meta content="/browserconfig.xml" name="msapplication-config"> -->
@@ -25,7 +26,7 @@
 		<meta content="897" property="og:image:height">
 		<meta content="image/png" property="og:image:type">
 		<meta content="website" property="og:type">
-		<meta content="<!--# echo var='pageUrl' -->" property="og:url">
+		<meta content="<!--# echo var='canonicalUrl' -->" property="og:url">
 		<meta content="summary" name="twitter:card">
 		<meta content="@TwifagHN" name="twitter:site">
 		<link href="//iwtcits.com" importance="high" rel="bestpony" type="text/html">
@@ -34,7 +35,7 @@
 		<script type="application/ld+json">
 			{
 				"@context": {
-					"@base": "<!--# echo var='pageUrl' -->",
+					"@base": "<!--# echo var='canonicalUrl' -->",
 					"@version": 1.1,
 					"@vocab": "https://schema.org"
 				},
