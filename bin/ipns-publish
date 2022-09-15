@@ -7,5 +7,5 @@
 
 	const ipfsKey = await IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
 	const cid = await IPFS.NAME.resolve(ipfsKey);
-	await IPFS.NAME.PUBLISH(cid);
+	await IPFS.NAME.publish(cid);
 })().catch(console.error);
