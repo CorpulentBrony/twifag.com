@@ -1,1 +1,11 @@
-d
+#!/usr/bin/env node
+
+(async function() {
+	// imported modules
+	const CONSTANTS = require("./include/constants.js");
+	const IPFS = require("./include/IPFS.js");
+
+	const ipfsKey = await IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
+	const cid = await IPFS.NAME.resolve(ipfsKey);
+	await IPFS.NAME.PUBLISH(cid);
+})().catch(console.error);

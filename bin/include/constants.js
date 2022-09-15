@@ -7,6 +7,7 @@ const IPFS_COMMAND = "~/.local/bin/ipfs";
 const IPFS_COMMAND_ADD = "add --cid-version 1 --recursive --hidden --pin --quieter";
 const IPFS_COMMAND_KEY_LIST = "key list --ipns-base base32 -l";
 const IPFS_COMMAND_NAME_RESOLVE = "name resolve";
+const IPFS_COMMAND_PIN_RM = "pin rm";
 const IPFS_DIR_NAME = "twifag-ipfs";
 const IPFS_TARGET_KEY = "twifag.eth";
 const REGEX_EMPTY_LINES = /\n^\s+$\n/gm;
@@ -19,7 +20,7 @@ const WALLET_DIR_NAME = ".well-known/wallets/";
 const WALLET_DIR_SOURCE = "/var/www/html/HIP-0002/twifag/";
 
 // calculated constants
-const DIR_WORKING = path.resolve(__dirname, "..");
+const DIR_WORKING = path.resolve(__dirname, "../..");
 const IPFS_COMMAND_NAME_PUBLISH = `name publish --ipns-base base32 --key ${IPFS_TARGET_KEY} --quieter`;
 
 // const OUTPUT_CAR_FILE = path.resolve(WORKING_DIR, OUTPUT_CAR_FILE_NAME);
@@ -50,6 +51,9 @@ const IPFS = globalThis.Object.freeze({
 		NAME: globalThis.Object.freeze({
 			PUBLISH: `${IPFS_COMMAND} ${IPFS_COMMAND_NAME_PUBLISH}`, 
 			RESOLVE: `${IPFS_COMMAND} ${IPFS_COMMAND_NAME_RESOLVE}`
+		}), 
+		PIN: globalThis.Object.freeze({
+			RM: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_RM}`
 		})
 	}), 
 	TARGET_KEY: IPFS_TARGET_KEY

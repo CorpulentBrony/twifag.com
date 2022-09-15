@@ -2,126 +2,10 @@
 
 (async function() {
 	// imported modules
-	const CONSTANTS = require("./constants.js");
-	const childProcess = require("node:child_process");
-	const fse = require("fs-extra");
-	const fsPromises = require("node:fs/promises");
-	const path = require("node:path");
-
-	// classes
-	class FileSystem {
-		static copy(source, destination, options = undefined) { return fse.copy(globalThis.String(source), globalThis.String(destination), options); }
-		static mkdir(path, options = undefined) { return fsPromises.mkdir(globalThis.String(path), options); }
-		static readdir(path, options = undefined) { return fsPromises.readdir(globalThis.String(path), options); }
-		static readFile(path, options = undefined) { return fsPromises.readFile(globalThis.String(path), options); }
-		static resolvePath(...paths) { return path.resolve(...paths.map(part => globalThis.String(part))); }
-		static rm(path, options = undefined) { return fsPromises.rm(globalThis.String(path), options); }
-		static writeFile(file, data, options = undefined) { return fsPromises.writeFile(globalThis.String(file), data, options); }
-	}
-
-	class IPFS {
-		static KEY = class KEY {
-			static async fromName(name) {
-				const keyList = await this.list();
-				const regExp = new globalThis.RegExp(`^(?<keyValue>\\S+) ${escapeRegExpString(name)}\\s*$`, "gm");
-				const match = regExp.exec(keyList);
-
-				if ("groups" in match && "keyValue" in match.groups && globalThis.String(match.groups.keyValue).length > 0)
-					return match.groups.keyValue;
-				return false;
-			}
-			static list() {
-				return new globalThis.Promise((resolve, reject) => {
-					let keyList = "";
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.KEY.LIST}`);
-					command.stderr.on("data", reject);
-					command.stdout.on("data", data => keyList += data);
-					command.on("close", code => {
-						if (keyList.length > 0)
-							resolve(keyList);
-						else
-							reject("ipfs key list command returned no key list");
-					});
-					command.on("error", reject);
-				});
-			}
-		};
-		static NAME = class NAME {
-			static publish(cid) {
-				return new globalThis.Promise((resolve, reject) => {
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.PUBLISH} ${cid}`);
-					command.stderr.on("data", reject);
-					command.on("close", code => {
-						if (code === 0)
-							resolve();
-						else
-							reject(`IPFS name publish terminated with exit code ${code}`);
-					});
-					command.on("error", reject);
-				});
-			}
-			static async resolve(keyPromise) {
-				const key =`/ipns/${await keyPromise}`;
-				return new globalThis.Promise((resolve, reject) => {
-					let cid = "";
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.RESOLVE} ${key}`);
-					command.stderr.on("data", reject);
-					command.stdout.on("data", data => cid += data);
-					command.on("close", code => {
-						cid = cid.trim();
-
-						if (cid.length > 0)
-							resolve(cid);
-						else
-							reject("ipfs name resolve command returned no CID");
-					});
-					command.on("error", reject);
-				});
-			}
-		};
-
-		static add() {
-			return new globalThis.Promise((resolve, reject) => {
-				let cid = "";
-				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.ADD} ${CONSTANTS.DIR.IPFS}`);
-				command.stderr.on("data", reject);
-				command.stdout.on("data", data => cid += data);
-				command.on("close", code => {
-					cid = `/ipfs/${cid.trim()}`;
-
-					if (cid.length > 6)
-						resolve(cid);
-					else
-						reject("ipfs add command returned no CID");
-				});
-				command.on("error", reject);
-			});
-		}
-	}
-	class SSI {
-		static async #process(file) {
-			const variables = new globalThis.Map();
-			let fileContents = await FileSystem.readFile(FileSystem.resolvePath(CONSTANTS.DIR, file), { encoding: "utf8" });
-
-			for (const match of fileContents.matchAll(CONSTANTS.REGEX.SET.COLLECTION)) {
-				const variable = match.groups.setArguments.match(CONSTANTS.REGEX.SET.VARIABLE).groups.variable;
-				const value = CONSTANTS.SSI.IGNORED_VARS.includes(variable) ? "" : match.groups.setArguments.match(CONSTANTS.REGEX.SET.VALUE).groups.value;
-				variables.set(variable, value);
-			}
-			
-			for (const [variable, value] of variables)
-				fileContents = fileContents.replace(new globalThis.RegExp(`<!--#\\s+echo\\s+var=['"]${variable}['"]\\s+-->`, "g"), value);
-			fileContents = fileContents.replace(CONSTANTS.REGEX.SET.GENERAL, "").replace(CONSTANTS.REGEX.EMPTY_LINES, "");
-			await FileSystem.writeFile(FileSystem.resolvePath(CONSTANTS.DIR.IPFS, file), fileContents);
-		}
-
-		static async process() {
-			await globalThis.Promise.all(CONSTANTS.FILES.SSI.reduce((processPromises, file) => {
-				processPromises.push(this.#process(file));
-				return processPromises;
-			}, []));
-		}
-	}
+	const CONSTANTS = require("./include/constants.js");
+	const FileSystem = require("./include/FileSystem.js");
+	const IPFS = require("./include/IPFS.js");
+	const SSI = require("./include/SSI.js");
 
 	// functions
 	async function copyAllFiles() {
@@ -139,7 +23,6 @@
 		}, copyPromises);
 		await globalThis.Promise.all(copyPromises);
 	}
-	function escapeRegExpString(regExpString) { return regExpString.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
 	// execution
 	const ipfsKeyPromise = IPFS.KEY.fromName(CONSTANTS.IPFS.TARGET_KEY);
@@ -157,7 +40,8 @@
 	}
 	console.log(`uploaded to ${cid}`);
 	await globalThis.Promise.all([
-		(async () => console.log(`publishing to /ipns/${await ipfsKeyPromise} ...`))(), 
-		IPFS.NAME.publish(cid)
+		(async () => console.log(`removing old pin and publishing new cid to /ipns/${await ipfsKeyPromise} ...`))(), 
+		IPFS.NAME.publish(cid), 
+		(async () => IPFS.PIN.RM(await ipfsPriorCid))()
 	]);
 })().catch(console.error);
