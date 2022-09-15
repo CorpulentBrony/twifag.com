@@ -6,7 +6,7 @@
 				<dc:format>image/svg+xml</dc:format>
 				<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
 				<cc:license rdf:resource="https://donutsteel.pl/"/>
-				<cc:license rdf:resource="https://plusnigger.autism.exposed/"/>
+				<cc:license rdf:resource="https://donutsteel.pl/plusnigger/"/>
 			</cc:Work>
 			<cc:License rdf:about="https://donutsteel.pl/">
 				<cc:prohibits rdf:resource="http://creativecommons.org/ns#CommercialUse"/>
