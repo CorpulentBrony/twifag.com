@@ -23,10 +23,6 @@
 		}, copyPromises);
 		await globalThis.Promise.all(copyPromises);
 	}
-	async function removeRemotePin(cid) {
-		try { return await IPFS.PIN.REMOTE.rm(cid); }
-		catch { return undefined; }
-	}
 	async function resolveIpfsKey(ipfsKey) {
 		try { return await IPFS.NAME.resolve(ipfsKey); }
 		catch { return undefined; }
@@ -52,7 +48,7 @@
 		console.log(`removing old remote pin and updating old CID ${ipfsPriorCid} ...`);
 		await globalThis.Promise.all([
 			IPFS.PIN.update(ipfsPriorCid, cid), 
-			removeRemotePin(ipfsPriorCid)
+			IPFS.PIN.REMOTE.rm(ipfsPriorCid)
 		]);
 	}
 	console.log(`adding remote pin and publishing new CID to ${ipfsKey} ...`);

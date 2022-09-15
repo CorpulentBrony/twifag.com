@@ -117,7 +117,10 @@ class IPFS {
 					else
 						reject(`IPFS pin update terminated with exit code ${code}`);
 				});
-				command.on("error", reject);
+				command.on("error", e => {
+					console.log(e);
+					reject(e);
+				});
 			});
 		}
 	};
