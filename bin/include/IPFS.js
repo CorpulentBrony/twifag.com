@@ -93,7 +93,7 @@ class IPFS {
 			}
 		};
 
-		static rm(cidPromise) {
+		static async rm(cidPromise) {
 			const cid = await globalThis.Promise.resolve(cidPromise);
 			return new globalThis.Promise((resolve, reject) => {
 				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.NAME.RM} ${cid}`);
