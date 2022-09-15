@@ -42,6 +42,6 @@
 	await globalThis.Promise.all([
 		(async () => console.log(`removing old pin and publishing new cid to /ipns/${await ipfsKeyPromise} ...`))(), 
 		IPFS.NAME.publish(cid), 
-		(async () => IPFS.PIN.RM(await ipfsPriorCid))()
+		(async () => IPFS.PIN.rm(await ipfsPriorCid))()
 	]);
 })().catch(console.error);
