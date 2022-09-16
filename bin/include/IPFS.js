@@ -80,6 +80,10 @@ class IPFS {
 			}
 			static rm(cid) {
 				return new globalThis.Promise((resolve, reject) => {
+					const match = cid.match(CONSTANTS.REGEX.EXTRACT_CID);
+
+					if ("groups" in match && "cid" in match.groups && globalThis.String(match.groups.cid).length > 0)
+						cid = match.groups.cid;
 					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM}=${cid}`);
 					command.stderr.on("data", reject);
 					command.on("close", code => {
