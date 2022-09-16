@@ -15,7 +15,7 @@ const IPFS_COMMAND_PIN_UPDATE = "pin update";
 const IPFS_DIR_NAME = "twifag-ipfs";
 const IPFS_TARGET_KEY = "twifag.eth";
 const REGEX_EMPTY_LINES = /\n^\s+$\n/gm;
-const REGEX_EXTRACT_CID = /\/ipfs\/(?<cid>\S+)/g;
+const REGEX_EXTRACT_CID = /\/ipfs\/(?<cid>\S+)/;
 const REGEX_SET_COLLECTION = /^\s*<!--#\s+set\s+(?<setArguments>.*)\s+-->\s*$/gm;
 const REGEX_SET_GENERAL = /<!--#\s+set\s+.+\s+-->/g;
 const REGEX_SET_VALUE = /value="(?<value>[^"]*)"/;
