@@ -9,10 +9,11 @@ const IPFS_COMMAND_KEY_LIST = "key list --ipns-base base32 -l";
 const IPFS_COMMAND_NAME_RESOLVE = "name resolve";
 const IPFS_COMMAND_PIN_ADD = "pin add";
 const IPFS_COMMAND_PIN_LS = "pin ls --quiet";
-const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service=pinata --status=queued,pinning,pinned,failed --cid";
+const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --status=queued,pinning,pinned,failed --cid";
 const IPFS_COMMAND_PIN_RM = "pin rm";
 const IPFS_COMMAND_PIN_UPDATE = "pin update";
 const IPFS_DIR_NAME = "twifag-ipfs";
+const IPFS_PINNING_SERVICES = ["pinata"];
 const IPFS_TARGET_KEY = "twifag.eth";
 const REGEX_EMPTY_LINES = /\n^\s+$\n/gm;
 const REGEX_EXTRACT_CID = /\/ipfs\/(?<cid>\S+)/;
@@ -27,7 +28,7 @@ const WALLET_DIR_SOURCE = "/var/www/html/HIP-0002/twifag/";
 // calculated constants
 const DIR_WORKING = path.resolve(__dirname, "../..");
 const IPFS_COMMAND_NAME_PUBLISH = `name publish --ipns-base base32 --key=${IPFS_TARGET_KEY} --quieter`;
-const IPFS_COMMAND_PIN_REMOTE_ADD = `pin remote add --background --name="${IPFS_TARGET_KEY}-${(new globalThis.Date()).toISOString()}" --service=pinata`;
+const IPFS_COMMAND_PIN_REMOTE_ADD = `pin remote add --background --name="${IPFS_TARGET_KEY}-${(new globalThis.Date()).toISOString()}"`;
 
 // const OUTPUT_CAR_FILE = path.resolve(WORKING_DIR, OUTPUT_CAR_FILE_NAME);
 const DIR_IPFS = path.resolve(DIR_WORKING, IPFS_DIR_NAME);
@@ -69,6 +70,7 @@ const IPFS = globalThis.Object.freeze({
 			UPDATE: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_UPDATE}`
 		})
 	}), 
+	PINNING_SERVICES: globalThis.Object.freeze(IPFS_PINNING_SERVICES), 
 	TARGET_KEY: IPFS_TARGET_KEY
 });
 const REGEX = globalThis.Object.freeze({

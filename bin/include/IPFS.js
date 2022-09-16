@@ -66,34 +66,48 @@ class IPFS {
 	static PIN = class PIN {
 		static REMOTE = class REMOTE {
 			static add(cid) {
-				return new globalThis.Promise((resolve, reject) => {
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.ADD} ${cid}`);
-					command.stderr.on("data", reject);
-					command.on("close", code => {
-						if (code === 0)
-							resolve();
-						else
-							reject(`IPFS pin remote add terminated with exit code ${code}`);
+				function addSingleService(service) {
+					return new globalThis.Promise((resolve, reject) => {
+						const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.ADD} --service=${service} ${cid}`);
+						command.stderr.on("data", reject);
+						command.on("close", code => {
+							if (code === 0)
+								resolve();
+							else
+								reject(`IPFS pin remote add for service ${service} terminated with exit code ${code}`);
+						});
+						command.on("error", reject);
 					});
-					command.on("error", reject);
-				});
+				}
+
+				return globalThis.Promise.all(CONSTANTS.IPFS.PINNING_SERVICES.reduce((results, service) => {
+					results.push(addSingleService(service));
+					return results;
+				}, []));
 			}
 			static rm(cid) {
-				return new globalThis.Promise((resolve, reject) => {
-					const match = cid.match(CONSTANTS.REGEX.EXTRACT_CID);
-
-					if ("groups" in match && "cid" in match.groups && globalThis.String(match.groups.cid).length > 0)
-						cid = match.groups.cid;
-					const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM}=${cid}`);
-					command.stderr.on("data", reject);
-					command.on("close", code => {
-						if (code === 0)
-							resolve();
-						else
-							reject(`IPFS pin remote rm terminated with exit code ${code}`);
+				function rmSingleService(service, cid) {
+					return new globalThis.Promise((resolve, reject) => {
+						const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.REMOTE.RM}=${cid} --service=${service}`);
+						command.stderr.on("data", reject);
+						command.on("close", code => {
+							if (code === 0)
+								resolve();
+							else
+								reject(`IPFS pin remote rm for service ${service} terminated with exit code ${code}`);
+						});
+						command.on("error", reject);
 					});
-					command.on("error", reject);
-				});
+				}
+				
+				const match = cid.match(CONSTANTS.REGEX.EXTRACT_CID);
+
+				if ("groups" in match && "cid" in match.groups && globalThis.String(match.groups.cid).length > 0)
+					cid = match.groups.cid;
+				return globalThis.Promise.all(CONSTANTS.IPFS.PINNING_SERVICES.reduce((results, service) => {
+					results.push(rmSingleService(service, cid));
+					return results;
+				}, []));
 			}
 		};
 
