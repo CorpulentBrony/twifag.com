@@ -7,6 +7,8 @@ const IPFS_COMMAND = "~/.local/bin/ipfs";
 const IPFS_COMMAND_ADD = "add --cid-version=1 --recursive --hidden --pin=false --quieter";
 const IPFS_COMMAND_KEY_LIST = "key list --ipns-base base32 -l";
 const IPFS_COMMAND_NAME_RESOLVE = "name resolve";
+const IPFS_COMMAND_PIN_ADD = "pin add";
+const IPFS_COMMAND_PIN_LS = "pin ls --quiet";
 const IPFS_COMMAND_PIN_REMOTE_RM = "pin remote rm --force --service=pinata --status=queued,pinning,pinned,failed --cid";
 const IPFS_COMMAND_PIN_RM = "pin rm";
 const IPFS_COMMAND_PIN_UPDATE = "pin update";
@@ -56,6 +58,8 @@ const IPFS = globalThis.Object.freeze({
 			RESOLVE: `${IPFS_COMMAND} ${IPFS_COMMAND_NAME_RESOLVE}`
 		}), 
 		PIN: globalThis.Object.freeze({
+			ADD: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_ADD}`, 
+			LS: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_LS}`, 
 			REMOTE: globalThis.Object.freeze({
 				ADD: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_REMOTE_ADD}`, 
 				RM: `${IPFS_COMMAND} ${IPFS_COMMAND_PIN_REMOTE_RM}`

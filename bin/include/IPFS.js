@@ -93,6 +93,45 @@ class IPFS {
 			}
 		};
 
+		static add(cid) {
+			return new globalThis.Promise((resolve, reject) => {
+				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.ADD} ${cid}`);
+				command.stderr.on("data", reject);
+				command.on("close", code => {
+					if (code === 0)
+						resolve();
+					else
+						reject(`IPFS pin add terminated with exit code ${code}`);
+				});
+				command.on("error", reject);
+			});
+		}
+		static async isPinned(cid) {
+			try {
+				const lsResult = await this.ls(cid);
+
+				if (typeof lsResult === "string" && lsResult.length > 0)
+					return true;
+			} catch { return false; }
+			return false;
+		}
+		static ls(cid = undefined) {
+			if (cid === undefined)
+				cid = "";
+			return new globalThis.Promise((resolve, reject) => {
+				let result = "";
+				const command = childProcess.exec(`${CONSTANTS.IPFS.COMMAND.PIN.LS} ${cid}`);
+				command.stderr.on("data", reject);
+				command.stdout.on("data", data => result += data);
+				command.on("close", code => {
+					if (result.length > 0)
+						resolve(result);
+					else
+						reject("ipfs add command returned no CID");
+				});
+				command.on("error", reject);
+			});
+		}
 		static async rm(cidPromise) {
 			const cid = await globalThis.Promise.resolve(cidPromise);
 			return new globalThis.Promise((resolve, reject) => {
@@ -117,10 +156,7 @@ class IPFS {
 					else
 						reject(`IPFS pin update terminated with exit code ${code}`);
 				});
-				command.on("error", e => {
-					console.log(e);
-					reject(e);
-				});
+				command.on("error", reject);
 			});
 		}
 	};

@@ -39,17 +39,26 @@
 	const ipfsPriorCid = await resolveIpfsKey(ipfsKey);
 
 	if (cid === ipfsPriorCid) {
-		console.log(`CID remains unchanged ${cid}`);
+		console.log(`deploy complete, CID remains unchanged ${cid}`);
 		return;
 	}
 	console.log(`new CID uploaded to ${cid}`);
+	let isOldCidPinned = true;
 
 	if (ipfsPriorCid !== undefined) {
-		console.log(`removing old remote pin and updating old CID ${ipfsPriorCid} ...`);
+		console.log(`removing old remote pin and checking if old CID is pinned...`);
 		await globalThis.Promise.all([
-			IPFS.PIN.update(ipfsPriorCid, cid), 
+			(async () => isOldCidPinned = await IPFS.PIN.isPinned(ipfsPriorCid))(), 
 			IPFS.PIN.REMOTE.rm(ipfsPriorCid)
 		]);
+	}
+
+	if (ipfsPriorCid === undefined || !isOldCidPinned) {
+		console.log("pinning new CID...");
+		IPFS.PIN.add(cid);
+	} else {
+		console.log(`updating old CID ${ipfsPriorCid} ...`);
+		IPFS.PIN.update(ipfsPriorCid, cid)
 	}
 	console.log(`adding remote pin and publishing new CID to ${ipfsKey} ...`);
 	await globalThis.Promise.all([
